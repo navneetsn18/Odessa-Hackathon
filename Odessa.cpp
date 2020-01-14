@@ -111,7 +111,7 @@ double calculate(int sInputC1,int sInputC2,int dInputC1,int dInputC2,int weight)
     }
     else if(totalDist>2000 && totalDist<=10000)
     {
-        cost=5+(totalDist-1000)*0.85;
+        cost=12.5+(totalDist-2000)*0.85;
     }
     else
     {
