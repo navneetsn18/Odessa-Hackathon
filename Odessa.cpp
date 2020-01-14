@@ -1,5 +1,6 @@
 #include<bits/stdc++.h>
 #include<cmath>
+#include<fstream>
 using namespace std;
 #define N 10
 #define M 10
@@ -64,9 +65,10 @@ int minDistance(char grid[N][M])
 	return -1; 
 } 
 
-double calculate(int sInputC1,int sInputC2,int dInputC1,int dInputC2,int weight){
+float calculate(int sInputC1,int sInputC2,int dInputC1,int dInputC2,int weight,int roverCount){
     char grid[10][10];
-    int i,j,roveri=5,roverj=5,totalDist=0,cost;
+    int i,j,roveri=5,roverj=5,totalDist=0;
+    float cost;
     for(i=0;i<10;i++){
         for(j=0;j<10;j++)
         {
@@ -103,15 +105,15 @@ double calculate(int sInputC1,int sInputC2,int dInputC1,int dInputC2,int weight)
     totalDist=rti+resShortestPath+dtr;
     cout<<"\n Your total distance is: "<<totalDist<< " meteres. ";
     if(totalDist<=1000){
-        cost=totalDist*0.5;
+        cost=(totalDist*0.005)*roverCount;
     }
     else if(totalDist>1000 && totalDist<=2000)
     {
-        cost=5+(totalDist-1000)*0.75;
+        cost=(5+(totalDist-1000)*0.0075)*roverCount;
     }
     else if(totalDist>2000 && totalDist<=10000)
     {
-        cost=12.5+(totalDist-2000)*0.85;
+        cost=(12.5+(totalDist-2000)*0.0085)*roverCount;
     }
     else
     {
@@ -121,8 +123,10 @@ double calculate(int sInputC1,int sInputC2,int dInputC1,int dInputC2,int weight)
 }
 int main()
 {
-    int sInputC1,sInputC2,dInputC1,dInputC2,weight;
-    double result;
+    int sInputC1,sInputC2,dInputC1,dInputC2,weight,roverCount;
+    float result,dayCost;
+    ofstream file;
+    file.open("DayCost.txt",ios::app);
     char ch;
     do{
         cout<<"\n\t\t\t\t\t Welcome to Odessa Delivery Services";
@@ -139,6 +143,15 @@ int main()
         cin>>dInputC2;
         cout<<"\n Enter the weight to be delivered in kgs: ";
         cin>>weight;
+        if(weight<=5)
+        {
+            roverCount=1;
+            cout<<"\n You need only "<<roverCount<<" rover.";
+        }
+        else{
+            roverCount=(weight/5)+1;
+            cout<<"\n You need "<<roverCount<<" rovers.";
+        }
         if(sInputC1<0 || sInputC1>9 || sInputC2<0 || sInputC2>9 || dInputC1<0 || dInputC1>9 || dInputC2<0 || dInputC2>9)
         {
             cout<<"\n Sorry we do not serve in this area.";
@@ -147,25 +160,30 @@ int main()
         {
             cout<<"\n Source and Destination canot be same.";
         }
-        else if(weight<0 || weight>10)
-        {
-            cout<<"\n Cannot deliver this much weight.";
-        }
         else
         {
-            result=calculate(sInputC1,sInputC2,dInputC1,dInputC2,weight);
+            result=calculate(sInputC1,sInputC2,dInputC1,dInputC2,weight,roverCount);
             if(result<0)
             {
                 cout<<"\n Sorry the delivery is not possible within this range.";
             }
             else
             {
+                dayCost+=result;
                 cout<<"\n The total cost you need to pay is : Rs "<<result;
             }
+        }
+        if(!file){
+            cout<<"\n File creation unsucessful!";
+        }
+        else{
+            file<<"\n\nSource: "<<sInputC1<<","<<sInputC2<<" Destination: "<<dInputC1<<","<<dInputC2<<" Weight: "<<weight<<" Cost: "<<result<<"\n";
         }
         cout<<"\n Thank You for trusting us.";
         cout<<"\n Press y to enter again and any other key to exit: ";
         cin>>ch;
     }while(ch=='y' || ch=='Y');
+    file<<"\n Total cost of day = "<<dayCost;
+    file.close();
     return 0;
 }
