@@ -1,9 +1,12 @@
 #include<bits/stdc++.h>
-#include<cmath>
 #include<fstream>
 using namespace std;
 #define N 10
 #define M 10
+int battery=9500;
+int tempi=5;
+int tempj=5;
+
 class QItem { 
 public: 
 	int row; 
@@ -16,7 +19,7 @@ public:
 }; 
 
 int minDistance(char grid[N][M]) 
-{ 
+{   
 	QItem source(0, 0, 0); 
 	bool visited[N][M]; 
 	for (int i = 0; i < N; i++) { 
@@ -67,9 +70,10 @@ int minDistance(char grid[N][M])
 
 float calculate(int sInputC1,int sInputC2,int dInputC1,int dInputC2,int weight,int roverCount){
     char grid[10][10];
-    int i,j,roveri=5,roverj=5,totalDist=0;
+    int i,j,totalDist=0;
     float cost;
-    for(i=0;i<10;i++){
+    for(i=0;i<10;i++)
+    {
         for(j=0;j<10;j++)
         {
             grid[i][j]='*';
@@ -86,23 +90,24 @@ float calculate(int sInputC1,int sInputC2,int dInputC1,int dInputC2,int weight,i
             grid[i][j]='*';
         }
     }
-    grid[roveri][roverj]='s';
+    grid[tempi][tempj]='s';
     grid[sInputC1][sInputC2]='d';
     int rti=minDistance(grid);
     rti*=100;
-    cout<<"\n Distance from Store House to source is: "<<rti<< " meteres. ";
-     for(i=0;i<10;i++){
+    //cout<<"\n Distance from Store House to source is: "<<rti<< " meteres. ";
+     for(i=0;i<10;i++)
+    {
         for(j=0;j<10;j++)
         {
             grid[i][j]='*';
         }
     }
-    grid[dInputC1][dInputC2]='s';
-    grid[roveri][roverj]='d';
+    grid[tempi][tempj]='s';
+    grid[sInputC1][sInputC1]='d';
     int dtr=minDistance(grid);
     dtr*=100;
-    cout<<"\n Distance from destination to Store House is: "<<dtr<< " meteres. ";
-    totalDist=rti+resShortestPath+dtr;
+    // cout<<"\n Distance from destination to Store House is: "<<dtr<< " meteres. ";
+    totalDist=rti+resShortestPath;
     cout<<"\n Your total distance is: "<<totalDist<< " meteres. ";
     if(totalDist<=1000){
         cost=(totalDist*0.005)*roverCount;
@@ -119,8 +124,18 @@ float calculate(int sInputC1,int sInputC2,int dInputC1,int dInputC2,int weight,i
     {
         cost=-1;
     }
+    battery=battery-totalDist-dtr ;
+    if(battery<=0)
+    {
+        cout<<"\n Less charge left!";
+        cost=-1;
+    }
+    else{
+        cout<<"\n Battery for further distance: "<<battery;
+    }
     return cost;
 }
+
 int main()
 {
     int sInputC1,sInputC2,dInputC1,dInputC2,weight,roverCount;
@@ -173,12 +188,17 @@ int main()
                 cout<<"\n The total cost you need to pay is : Rs "<<result;
             }
         }
-        if(!file){
+
+        if(!file)
+        {
             cout<<"\n File creation unsucessful!";
         }
-        else{
-            file<<"\n\nSource: "<<sInputC1<<","<<sInputC2<<" Destination: "<<dInputC1<<","<<dInputC2<<" Weight: "<<weight<<" Cost: "<<result<<"\n";
+        else
+        {
+            file<<"\nSource: "<<sInputC1<<","<<sInputC2<<" Destination: "<<dInputC1<<","<<dInputC2<<" Weight: "<<weight<<" Cost: "<<result<<" Number of rovers used: "<<roverCount<<"\n";
         }
+        tempi=dInputC1;
+        tempj=dInputC2;
         cout<<"\n Thank You for trusting us.";
         cout<<"\n Press y to enter again and any other key to exit: ";
         cin>>ch;
